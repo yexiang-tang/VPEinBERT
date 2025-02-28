@@ -19,17 +19,19 @@ These outcomes suggest BERT indeed encodes certain compositional relationships, 
 ## 2. Experiment and Dataset
 
 **Experiment Design**  
-The method was to determine whether BERT detects **silenced verb-phrase structures** (VP-Ellipsis). Specifically, we generated pairs (or triplets) of sentences—one elliptical (with a missing verb phrase), one fully stated, and one contrast sentence with a distinct meaning but identical surface structure. We then used BERT to encode each sentence and measured their embedding similarities (cosine similarity, Euclidean distance, and a ratio of cosine similarity) to assess whether elliptical sentences aligned more with their full counterparts than with unrelated contrasts.
+Our primary experiment tests whether BERT detects silenced verb-phrase structures. 
+We created **sentence triplets**—consisting of *elliptical*, *full*, and *contrast* sentences—to determine if 
+elliptical embeddings align more similarly with their full counterparts than unrelated contrasts.
+The key hypothesis is that a higher similarity between elliptical–full pairs (relative to elliptical–contrast) 
+would indicate that BERT encodes silenced structure in elliptical sentences, suggesting compositional understanding.
 
 **Dataset**  
-- **Sentence Generation**: We used a Context-Free Grammar (CFG) in Python/NLTK to systematically produce **3,616 sentence triplets**:  
-  1. **Elliptical** sentence (e.g., "Sarah teaches history, and John does.")  
-  2. **Full** sentence (fully tated the verb phrase, e.g., "Sarah teaches history, and John teaches history.")  
-  3. **Contrast** sentence (same surface structure, different meaning, e.g., "Sarah teaches history, and John hikes")  
-- **Structure Types**: We included various verb tenses and auxiliaries (e.g., present tense, modals, negation) to cover multiple syntactic forms.  
-- **Verb Variation**: Contrast sentences were subdivided into a *selected* group (semantically closer to the elliptical verb) and a *random* group (more distant verbs) to test sensitivity to lexical similarity.  
-- **Availability**: The dataset is generated programmatically; you can reproduce or customize it by running `Sentence_Generator.py` in this repository. If needed, you can adapt the CFG rules for different sentence structures.
-
+We generated **3,600+ sentence triplets** via a **Context-Free Grammar (CFG)** generaotr in Python 
+(for more detail, find [NLTK library’s grammar generator](https://www.nltk.org/) (Qi et al., 2020)).
+Each triplet includes:  
+- **Elliptical sentence** (e.g., “Sally teaches history, and Bill does”)  
+- **Full sentence** (e.g., “Sally teaches history, and Bill teaches history”)  
+- **Contrast sentence** (e.g., "Sally teahces history, and Bill hikes.")
 
 ---
 ## 3. Model
