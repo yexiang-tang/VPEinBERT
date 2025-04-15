@@ -1,12 +1,12 @@
+# This program calculates the correlation between words and metrics. With visualization
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import statsmodels.api as sm
 from scipy.stats import spearmanr, ttest_ind
 
-# ---------------------------
 # 1. LOAD DATA
-# ---------------------------
 file_path = r"C:\Users\Tang Yexiang\Desktop\Thesis_code\results_denoted_random.CSV" # Change the file rout accordingly
 df = pd.read_csv(file_path)
 
@@ -16,9 +16,7 @@ df["Tree Type"] = df["Tree Type"].astype(int)
 # Define keywords for detection
 keywords = ["and", "but", "can", "will", "cannot", "does", "did", "not"]
 
-# ---------------------------
 # 2. CORRELATION: KEYWORD PRESENCE vs. Metric
-# ---------------------------
 # Create a temporary DataFrame with binary columns for each keyword
 df_temp = pd.DataFrame({
     kw: df["Elliptical Sentence"].str.contains(rf"\b{kw}\b", case=False, na=False).astype(int)
@@ -36,9 +34,7 @@ sns.heatmap(corr_matrix, annot=True, cmap="coolwarm", fmt=".2f")
 plt.title("Correlation Heatmap: Verb Presence vs. Ratio of Similarity (random)")
 plt.show()
 
-# ---------------------------
 # 3. SPEARMAN CORRELATION: TREE TYPE vs. Metric
-# ---------------------------
 tree_types = df["Tree Type"].unique()
 tree_type_correlation = {}
 
@@ -60,9 +56,7 @@ plt.ylabel("Tree Type")
 plt.title("Heatmap: Correlation of Tree Type with Cosine Similarity Ratio (selected)")
 plt.show()
 
-# ---------------------------
 # 4. DIVERGING BAR CHART FOR CORRELATIONS
-# ---------------------------
 # Sort DataFrame and define colors
 tree_ratio_corr_df = tree_ratio_corr_df.sort_values("Cosine Similarity Ratio (X/Y)")    # Change the column if needed
 colors = tree_ratio_corr_df["Cosine Similarity Ratio (X/Y)"].apply(lambda x: "red" if x > 0 else "blue")    # Same as above

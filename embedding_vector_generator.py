@@ -1,3 +1,5 @@
+# This program generates embedding vectors of incoming sentences with BERT
+
 import torch
 import pandas as pd
 from transformers import AutoModel, AutoTokenizer

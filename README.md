@@ -1,58 +1,89 @@
 # Compositionality in LLMs: testing VP-Ellipsis within BERT
+This repository is part of Yexiang Tang's Honors Thesis *Compositionality in Large-Language-Models: Testing VP-Ellipsis with BERT*. The study investigates whether transformer-based models like BERT exhibit **compositional understanding**—the principle that complex meanings are built from the meanings and structure of simpler parts—by analyzing how BERT encodes verb-phrase ellipsis (VP-Ellipsis).
 
-## 1. Brief Summary of the Paper
+## Overview
 
-**Context & Motivation**  
-Compositionality is the principle that a complex expression’s meaning is determined by the meanings of its parts and their structure. Traditional symbolic theories, such as Jerry Fodor’s Language of Thought Hypothesis, posit that cognition is governed by rule-based symbolic operations. In contrast, Large Language Models (LLMs) like BERT use distributed representations and data-driven learning. This thesis investigates whether BERT encodes compositionality by focusing on verb-phrase ellipsis (VP-Ellipsis)—cases where a verb phrase is silenced but implicitly understood (e.g., “Sarah teaches history, but John does not”). Detecting this hidden structure would provide evidence of compositional reasoning rather than mere pattern-matching.
+- **Goal**: Test whether BERT detects silenced syntactic structures in elliptical sentences, similar to how humans process language compositionally.
 
-**Key Findings**  
-The key observances are:
+- **Approach**: Compare the sentence embeddings of elliptical sentences to their full and contrast counterparts.
 
-- Moderate Evidence of Compositionality: Elliptical–full pairs generally scored higher similarity than elliptical–contrast pairs.
-- Variability Across Structures: The negation-enhanced clause structures were more inconsistent, sometimes dropping below the expected ratio of 1.
-- Partial but Not Robust: While BERT appears to capture some silenced structures, the overall effect sizes were small, indicating only a weak compositional understanding.
-
-These outcomes suggest BERT indeed encodes certain compositional relationships, though further research is needed to fully determine how robustly and systematically LLMs capture compositionality.
+- **Key Hypothesis**: If BERT is compositional, embeddings of elliptical sentences should resemble their full versions more than unrelated contrast sentences.
 
 ---
 
-## 2. Experiment and Dataset
+## Methodology
 
-**Experiment Design**  
-Our primary experiment tests whether BERT detects silenced verb-phrase structures. 
-We created **sentence triplets**—consisting of *elliptical*, *full*, and *contrast* sentences—to determine if 
-elliptical embeddings align more similarly with their full counterparts than unrelated contrasts.
-The key hypothesis is that a higher similarity between elliptical–full pairs (relative to elliptical–contrast) 
-would indicate that BERT encodes silenced structure in elliptical sentences, suggesting compositional understanding.
+### Dataset
+We generated **3,600+ sentence triplets** with a **Context-Free Grammar (CFG)** via the NLTK toolkit:
 
-**Dataset**  
-We generated **3,600+ sentence triplets** via a **Context-Free Grammar (CFG)** generaotr in Python 
-(for more detail, find [NLTK library’s grammar generator](https://www.nltk.org/) (Qi et al., 2020)).
-Each triplet includes:  
-- **Elliptical sentence** (e.g., “Sally teaches history, and Bill does”)  
-- **Full sentence** (e.g., “Sally teaches history, and Bill teaches history”)  
-- **Contrast sentence** (e.g., "Sally teahces history, and Bill hikes.")
+- **Full Sentence**: e.g., _“Sally teaches history, and John teaches history.”_
+- **Elliptical Sentence**: e.g., _“Sally teaches history, and John does.”_
+- **Contrast Sentence**: e.g., _“Sally teaches history, and John hikes.”_
 
----
-## 3. Model
+Sentence structures were carefully controlled and categorized into three syntactic types:  
+- **Type-0**: Basic clause  
+- **Type-1**: Auxiliary-enhanced clause  
+- **Type-2**: Negation-enhanced clause
 
-**Model Architecture**  
-We utilize the `bert-large-uncased-whole-word-masking` variant of BERT (24 layers, 1024-dimensional hidden states) because:
-- **Bidirectional Context**: It processes both left and right contexts simultaneously, ideal for capturing nuanced sentence structures.
-- **Robust Embeddings**: We can directly analyze embedding vectors (rather than generated text), making it easier for internal analysis of BERT.
-- **Implementation**: We employ the [Hugging Face Transformers](https://github.com/huggingface/transformers) library in a Python environment.
+Each contrast verb was selected to either be semantically similar (selected group) or dissimilar (random group) to the original verb, and lexical similarity was measured and validated.
 
-During the experiment, each sentence (elliptical, full, or contrast) is tokenized and fed into the BERT model. We then extract the final-layer `[CLS]` token embedding (size 1×1024) to represent the entire sentence. No additional fine-tuning steps were performed; we rely on BERT’s pre-trained weights to measure how well it inherently encodes the silenced structures.
+### Model
+
+We used the `bert-large-uncased-whole-word-masking` variant from Hugging Face’s Transformers library. Embeddings were extracted from the `[CLS]` token of the final layer for each sentence. No additional fine-tuning was performed.
 
 ---
 
-## 4. Results
-**Key Metrics**  
-We evaluated the following metrics to measure sentence similarity:
-- **Cosine Similarity**: Reflects how closely two embedding vectors align in angle.  
-- **Euclidean Distance**: Overall distance in the high-dimensional space.  
-- **Ratio (Elliptical–Full vs. Elliptical–Contrast)**: A score >1 suggests elliptical sentences are embedded more closely to their full versions than to unrelated contrasts.
- 
+## Metrics & Analysis
 
+Three metrics were used to evaluate embedding similarity:
 
+- **Cosine Similarity**
+- **Euclidean Distance**
+- **Cosine Similarity Ratio (Elliptical–Full / Elliptical–Contrast)**  
+  A ratio > 1 indicates BERT encodes the ellipsis structure similarly to the full sentence.
 
+---
+
+## Key Findings
+
+- **Evidence of Compositionality**: On average, elliptical–full pairs were more similar than elliptical–contrast pairs.
+- **Effect Size is Small**: The mean cosine similarity ratio was only slightly above 1 (~1.037).
+- **Structural Variation Matters**: Some clause types (especially negation-enhanced) disrupted the expected similarity pattern.
+- **Word-Specific Effects not Present**: No strong correlations between individual words and metrics, indicating the content and strcuture—not particular lexical choice—are the key driver.
+
+---
+
+## Code Components
+
+This repository includes all scripts used in dataset construction, model evaluation, and result visualization:
+
+| File | Description |
+|------|-------------|
+| `Sentence_Generator.py` | Generates syntactically controlled sentence triplets using NLTK's CFG. |
+| `embedding_vector_generator.py` | Passes sentences through BERT and extracts `[CLS]` token embeddings. |
+| `metrics_calculation.py` | Computes cosine similarity and Euclidean distance between embeddings. |
+| `metrics_summary.py` | Summarizes metric statistics and outputs CSVs for analysis. |
+| `analysis_in_words.py` | Analyzes how individual words influence similarity metrics, includes visualizations. |
+| `visualizations.py` | Creates heatmaps, boxplots, and histograms to illustrate experimental results. |
+
+Each component is modular, allowing for easy adaptation to new datasets.
+
+---
+
+## Paper & Citation
+
+For full background, theoretical discussion, and results, see the full paper:  
+[`Compositionality in Large-Language-Models.pdf`](./Compositionality_in_Large_Language_Models.pdf)
+
+If you use or build on this work, please cite appropriately (citation format coming soon).
+
+---
+
+## Future Work
+
+Potential directions include:
+- Scaling up dataset size
+- Testing other hidden structures (e.g., sluicing, gapping, anaphora)
+- Exploring different linguistic theories
+
+---

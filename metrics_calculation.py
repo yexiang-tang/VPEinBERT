@@ -1,3 +1,5 @@
+# This program calculates metrics (Euclidean distances, Cosine Similarity, Ratio, etc.) within sentences pairs
+
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
